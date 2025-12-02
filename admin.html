@@ -185,12 +185,20 @@
                 const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
                 const filePath = `${fileName}`;
 
+                // Try upload
                 const { data, error } = await window.supabase.storage
                     .from('product-images')
-                    .upload(filePath, file);
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
 
-                if (error) throw error;
+                if (error) {
+                    console.error("Supabase Storage Error:", error);
+                    throw error;
+                }
 
+                // Get Public URL
                 const { data: { publicUrl } } = window.supabase.storage
                     .from('product-images')
                     .getPublicUrl(filePath);
@@ -214,7 +222,12 @@
                     await onSave({ ...formData, image: finalImageUrl });
                     onClose();
                 } catch (error) {
-                    alert('Error uploading image or saving product: ' + error.message);
+                    // Friendly error message for "Failed to fetch"
+                    if (error.message === 'Failed to fetch') {
+                        alert('Connection Error: Unable to upload image. Please check your internet connection or ensure the "product-images" bucket exists in Supabase.');
+                    } else {
+                        alert('Error: ' + error.message);
+                    }
                 } finally {
                     setLoading(false);
                     setUploading(false);
@@ -282,7 +295,7 @@
                                     {/* Preview: Existing Image */}
                                     {formData.image && !imageFile && (
                                         <div className="mt-2 text-xs text-gray-400 flex items-center gap-2">
-                                            <img src={formData.image} className="w-8 h-8 rounded object-cover border border-gray-200" />
+                                            <img src={formData.image} className="w-8 h-8 rounded object-cover border border-gray-200" onError={(e) => e.target.style.display = 'none'} />
                                             <span>Current image set</span>
                                         </div>
                                     )}
@@ -424,6 +437,7 @@
             const [loading, setLoading] = useState(true);
             const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 Minutes
             const logoutTimerRef = useRef(null);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
             const handleLogout = useCallback(async (forced = false) => {
                 if(forced || confirm("Are you sure you want to logout?")) {
@@ -513,8 +527,15 @@
             if (!session) return <LoginScreen />;
 
             return (
-                <div className="flex min-h-screen bg-brandWhite">
-                    <aside className="w-64 bg-brandBlack text-gray-300 fixed h-full z-20 flex flex-col shadow-2xl border-r border-brandGold/20">
+                <div className="flex min-h-screen bg-brandWhite relative">
+                    {mobileMenuOpen && (
+                        <div 
+                            className="fixed inset-0 bg-black/50 z-20 md:hidden backdrop-blur-sm"
+                            onClick={() => setMobileMenuOpen(false)}
+                        ></div>
+                    )}
+
+                    <aside className={`w-64 bg-brandBlack text-gray-300 fixed h-full z-30 flex flex-col shadow-2xl border-r border-brandGold/20 transition-transform duration-300 ease-in-out transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
                         <div className="h-20 flex items-center px-6 font-bold text-white text-xl tracking-wider border-b border-brandGold/20 font-serif">
                             DYUK ADMIN
                         </div>
@@ -533,9 +554,20 @@
                             </button>
                         </div>
                     </aside>
-                    <main className="flex-1 ml-64 p-8">
+                    <main className="flex-1 md:ml-64 p-4 md:p-8 transition-all duration-300">
                         <header className="flex justify-between items-center mb-8">
-                            <div><h1 className="text-2xl font-bold text-brandBlack font-serif">Product Management</h1><p className="text-gray-500 text-sm">Welcome back, Admin</p></div>
+                            <div className="flex items-center">
+                                <button 
+                                    className="md:hidden mr-4 text-brandGold p-2 rounded hover:bg-brandBlue/10 transition-colors"
+                                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                >
+                                    <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'} text-xl`}></i>
+                                </button>
+                                <div>
+                                    <h1 className="text-xl md:text-2xl font-bold text-brandBlack font-serif">Product Management</h1>
+                                    <p className="text-gray-500 text-xs md:text-sm">Welcome back, Admin</p>
+                                </div>
+                            </div>
                             <div className="flex items-center gap-3"><div className="h-10 w-10 rounded-full bg-brandBlue text-brandGold flex items-center justify-center font-bold border border-brandGold shadow-sm">AD</div></div>
                         </header>
                         <Dashboard products={products} onAdd={openAddModal} onEdit={openEditModal} onDelete={handleDeleteProduct} />
