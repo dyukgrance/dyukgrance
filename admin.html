@@ -16,7 +16,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Supabase SDK -->
@@ -33,17 +33,39 @@
         window.dispatchEvent(new Event('supabase-ready'));
     </script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlack: '#020202',
+                        brandBlue: '#0F172A', 
+                        brandGold: '#D4AF37',
+                        brandGoldLight: '#F9E076',
+                        brandWhite: '#F8FAFC',
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Montserrat"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        body { font-family: 'Montserrat', sans-serif; background-color: #F8FAFC; }
+        
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #B59530; }
         
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        .gold-text {
+            background: linear-gradient(to bottom right, #F9E076, #D4AF37, #8C6A18);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
@@ -68,7 +90,6 @@
                 setLoading(true);
 
                 try {
-                    // 1. Authenticate with Supabase
                     const { data, error } = await window.supabase.auth.signInWithPassword({
                         email: email,
                         password: password
@@ -76,14 +97,11 @@
 
                     if (error) throw error;
 
-                    // 2. Strict Email Check (Client-side enforcement)
                     if (data.user.email !== 'dukehealthalex@gmail.com') {
                         await window.supabase.auth.signOut();
-                        throw new Error("Access Denied: This account is not authorized for the admin panel.");
+                        throw new Error("Access Denied: Restricted Area.");
                     }
                     
-                    // Success! The session state in AdminApp will detect the change automatically.
-
                 } catch (err) {
                     setError(err.message);
                     setLoading(false);
@@ -91,21 +109,22 @@
             };
 
             return (
-                <div className="min-h-screen flex items-center justify-center bg-slate-900 bg-[url('https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&q=80')] bg-cover bg-center bg-no-repeat relative">
-                    <div className="absolute inset-0 bg-slate-900/80"></div>
-                    <div className="relative z-10 w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl animate-fade-in-up">
+                <div className="min-h-screen flex items-center justify-center bg-brandBlack relative">
+                    {/* Background Texture */}
+                    <div className="absolute inset-0 bg-brandBlue opacity-50"></div>
+                    <div className="relative z-10 w-full max-w-md p-8 bg-white rounded-xl shadow-2xl border-t-4 border-brandGold">
                         <div className="text-center mb-8">
-                            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Dyukgrance</h1>
-                            <p className="text-sm text-slate-500 uppercase tracking-widest mt-2">Administrative Portal</p>
+                            <h1 className="text-3xl font-serif font-bold text-brandBlack tracking-widest">DYUKGRANCE</h1>
+                            <p className="text-xs text-brandGold uppercase tracking-[0.3em] mt-2 font-bold">Admin Portal</p>
                         </div>
                         <form onSubmit={handleAuth} className="space-y-6">
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Email Address</label>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Email Address</label>
                                 <div className="relative">
-                                    <i className="fas fa-envelope absolute left-3 top-3 text-slate-400"></i>
+                                    <i className="fas fa-envelope absolute left-3 top-3 text-brandGold"></i>
                                     <input 
                                         type="email" 
-                                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandGold focus:border-brandGold outline-none transition-all"
                                         placeholder="admin@example.com"
                                         value={email}
                                         onChange={e => setEmail(e.target.value)}
@@ -114,12 +133,12 @@
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Password</label>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Password</label>
                                 <div className="relative">
-                                    <i className="fas fa-lock absolute left-3 top-3 text-slate-400"></i>
+                                    <i className="fas fa-lock absolute left-3 top-3 text-brandGold"></i>
                                     <input 
                                         type="password" 
-                                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all"
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandGold focus:border-brandGold outline-none transition-all"
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
@@ -128,7 +147,7 @@
                                 </div>
                             </div>
                             {error && <div className="p-3 bg-red-50 text-red-600 text-xs font-bold rounded flex items-center"><i className="fas fa-exclamation-circle mr-2"></i>{error}</div>}
-                            <button disabled={loading} className="w-full bg-slate-900 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition-colors shadow-lg disabled:opacity-50">
+                            <button disabled={loading} className="w-full bg-brandBlack text-brandGold font-bold py-3 rounded-lg hover:bg-brandBlue transition-all shadow-lg disabled:opacity-50 uppercase tracking-wider text-sm border border-brandGold/20">
                                 {loading ? 'Authenticating...' : 'Access Dashboard'}
                             </button>
                         </form>
@@ -143,9 +162,11 @@
                 name: '',
                 price: '',
                 description: '',
-                image: '',
+                image: '', 
                 category: 'Perfume'
             });
+            const [imageFile, setImageFile] = useState(null);
+            const [uploading, setUploading] = useState(false);
             const [loading, setLoading] = useState(false);
 
             useEffect(() => {
@@ -154,41 +175,75 @@
                 } else {
                     setFormData({ name: '', price: '', description: '', image: '', category: 'Perfume' });
                 }
+                setImageFile(null);
             }, [product, isOpen]);
 
             if (!isOpen) return null;
 
+            const handleImageUpload = async (file) => {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+                const filePath = `${fileName}`;
+
+                const { data, error } = await window.supabase.storage
+                    .from('product-images')
+                    .upload(filePath, file);
+
+                if (error) throw error;
+
+                const { data: { publicUrl } } = window.supabase.storage
+                    .from('product-images')
+                    .getPublicUrl(filePath);
+
+                return publicUrl;
+            };
+
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 setLoading(true);
-                await onSave(formData);
-                setLoading(false);
-                onClose();
+                
+                try {
+                    let finalImageUrl = formData.image;
+
+                    if (imageFile) {
+                        setUploading(true);
+                        finalImageUrl = await handleImageUpload(imageFile);
+                        setUploading(false);
+                    }
+
+                    await onSave({ ...formData, image: finalImageUrl });
+                    onClose();
+                } catch (error) {
+                    alert('Error uploading image or saving product: ' + error.message);
+                } finally {
+                    setLoading(false);
+                    setUploading(false);
+                }
             };
 
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}></div>
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h3 className="font-bold text-slate-800 text-lg">{product ? 'Edit Product' : 'Add New Product'}</h3>
-                            <button onClick={onClose} className="text-slate-400 hover:text-red-500 transition-colors"><i className="fas fa-times text-xl"></i></button>
+                    <div className="absolute inset-0 bg-brandBlue/80 backdrop-blur-sm" onClick={onClose}></div>
+                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-brandGold/20">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <h3 className="font-bold text-brandBlack font-serif text-lg">{product ? 'Edit Product' : 'Add New Product'}</h3>
+                            <button onClick={onClose} className="text-gray-400 hover:text-red-500 transition-colors"><i className="fas fa-times text-xl"></i></button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Product Name</label>
-                                    <input required className="w-full p-2 border border-slate-200 rounded focus:border-green-500 outline-none" 
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Product Name</label>
+                                    <input required className="w-full p-2 border border-gray-200 rounded focus:border-brandGold outline-none" 
                                         value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Midnight Oud" />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Price</label>
-                                    <input required className="w-full p-2 border border-slate-200 rounded focus:border-green-500 outline-none" 
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Price</label>
+                                    <input required className="w-full p-2 border border-gray-200 rounded focus:border-brandGold outline-none" 
                                         value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} placeholder="$120.00" />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
-                                    <select className="w-full p-2 border border-slate-200 rounded focus:border-green-500 outline-none"
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Category</label>
+                                    <select className="w-full p-2 border border-gray-200 rounded focus:border-brandGold outline-none"
                                         value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
                                         <option>Perfume</option>
                                         <option>Cologne</option>
@@ -197,20 +252,63 @@
                                     </select>
                                 </div>
                                 <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Image URL</label>
-                                    <input required className="w-full p-2 border border-slate-200 rounded focus:border-green-500 outline-none" 
-                                        value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Product Image</label>
+                                    
+                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors relative cursor-pointer group">
+                                        <input 
+                                            type="file" 
+                                            accept="image/*"
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            onChange={(e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    setImageFile(e.target.files[0]);
+                                                }
+                                            }}
+                                        />
+                                        <div className="space-y-2 pointer-events-none">
+                                            {imageFile ? (
+                                                <span className="text-green-600 font-bold text-sm flex items-center justify-center gap-2">
+                                                    <i className="fas fa-check-circle"></i> {imageFile.name}
+                                                </span>
+                                            ) : (
+                                                <>
+                                                    <i className="fas fa-cloud-upload-alt text-3xl text-brandGold/50 group-hover:text-brandGold transition-colors"></i>
+                                                    <p className="text-sm text-gray-500">Click to upload image</p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Preview: Existing Image */}
+                                    {formData.image && !imageFile && (
+                                        <div className="mt-2 text-xs text-gray-400 flex items-center gap-2">
+                                            <img src={formData.image} className="w-8 h-8 rounded object-cover border border-gray-200" />
+                                            <span>Current image set</span>
+                                        </div>
+                                    )}
+
+                                    {/* Preview: New Upload */}
+                                    {imageFile && (
+                                        <div className="mt-2 text-xs text-brandGold flex items-center gap-2">
+                                            <img src={URL.createObjectURL(imageFile)} className="w-8 h-8 rounded object-cover border border-brandGold/30" />
+                                            <span>New image selected</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
-                                    <textarea required rows="3" className="w-full p-2 border border-slate-200 rounded focus:border-green-500 outline-none" 
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Description</label>
+                                    <textarea required rows="3" className="w-full p-2 border border-gray-200 rounded focus:border-brandGold outline-none" 
                                         value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Product details..."></textarea>
                                 </div>
                             </div>
                             <div className="pt-4 flex gap-3">
-                                <button type="button" onClick={onClose} className="flex-1 py-2 text-slate-600 font-semibold hover:bg-slate-100 rounded">Cancel</button>
-                                <button type="submit" disabled={loading} className="flex-1 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 shadow-md">
-                                    {loading ? <i className="fas fa-spinner fa-spin"></i> : (product ? 'Save Changes' : 'Create Product')}
+                                <button type="button" onClick={onClose} className="flex-1 py-2 text-gray-600 font-semibold hover:bg-gray-100 rounded transition-colors">Cancel</button>
+                                <button type="submit" disabled={loading} className="flex-1 py-2 bg-brandBlack text-brandGold font-bold rounded hover:bg-brandBlue shadow-md flex items-center justify-center gap-2 transition-all uppercase text-xs tracking-wider">
+                                    {loading ? (
+                                        <>
+                                            <i className="fas fa-spinner fa-spin"></i> {uploading ? 'Uploading...' : 'Saving...'}
+                                        </>
+                                    ) : (product ? 'Save Changes' : 'Create Product')}
                                 </button>
                             </div>
                         </form>
@@ -224,8 +322,8 @@
             const [searchTerm, setSearchTerm] = useState('');
 
             const filteredProducts = products.filter(p => 
-                p.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                p.category?.toLowerCase().includes(searchTerm.toLowerCase())
+                (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                (p.category || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
 
             return (
@@ -233,79 +331,78 @@
                     {/* Header Controls */}
                     <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                         <div className="relative w-full md:w-96">
-                            <i className="fas fa-search absolute left-4 top-3.5 text-slate-400"></i>
+                            <i className="fas fa-search absolute left-4 top-3.5 text-brandGold"></i>
                             <input 
                                 type="text" 
                                 placeholder="Search inventory..." 
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border-none shadow-sm focus:ring-2 focus:ring-green-500 outline-none text-sm"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-brandGold outline-none text-sm"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <button onClick={onAdd} className="bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-lg shadow-green-200 flex items-center gap-2">
+                        <button onClick={onAdd} className="bg-brandBlack text-brandGold px-6 py-3 rounded-xl font-bold hover:bg-brandBlue transition shadow-lg flex items-center gap-2 uppercase text-xs tracking-wider border border-brandGold/20">
                             <i className="fas fa-plus"></i> Add Product
                         </button>
                     </div>
 
                     {/* Stats Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl"><i className="fas fa-box"></i></div>
-                            <div><div className="text-2xl font-bold text-slate-800">{products.length}</div><div className="text-xs text-slate-500 font-bold uppercase">Total Products</div></div>
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-brandBlue text-brandGold flex items-center justify-center text-xl"><i className="fas fa-box"></i></div>
+                            <div><div className="text-2xl font-bold text-brandBlack">{products.length}</div><div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Total Products</div></div>
                         </div>
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl"><i className="fas fa-tag"></i></div>
-                            <div><div className="text-2xl font-bold text-slate-800">{products.filter(p => p.category === 'Perfume').length}</div><div className="text-xs text-slate-500 font-bold uppercase">Perfumes</div></div>
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-brandGold/20 text-brandGold flex items-center justify-center text-xl"><i className="fas fa-tag"></i></div>
+                            <div><div className="text-2xl font-bold text-brandBlack">{products.filter(p => p.category === 'Perfume').length}</div><div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Perfumes</div></div>
                         </div>
                     </div>
 
                     {/* Products Table */}
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-slate-50 border-b border-slate-200">
+                                <thead className="bg-brandBlue text-brandGold border-b border-brandGold/20">
                                     <tr>
-                                        <th className="p-4 pl-6 text-xs font-bold text-slate-500 uppercase">Item</th>
-                                        <th className="p-4 text-xs font-bold text-slate-500 uppercase">Category</th>
-                                        <th className="p-4 text-xs font-bold text-slate-500 uppercase">Price</th>
-                                        <th className="p-4 text-xs font-bold text-slate-500 uppercase">Created At</th>
-                                        <th className="p-4 pr-6 text-xs font-bold text-slate-500 uppercase text-right">Actions</th>
+                                        <th className="p-4 pl-6 text-xs font-bold uppercase tracking-wider">Item</th>
+                                        <th className="p-4 text-xs font-bold uppercase tracking-wider">Category</th>
+                                        <th className="p-4 text-xs font-bold uppercase tracking-wider">Price</th>
+                                        <th className="p-4 text-xs font-bold uppercase tracking-wider">Created At</th>
+                                        <th className="p-4 pr-6 text-xs font-bold uppercase tracking-wider text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100">
+                                <tbody className="divide-y divide-gray-100">
                                     {filteredProducts.map(p => (
-                                        <tr key={p.id} className="hover:bg-slate-50/80 transition-colors group">
+                                        <tr key={p.id} className="hover:bg-gray-50 transition-colors group">
                                             <td className="p-4 pl-6">
                                                 <div className="flex items-center gap-4">
-                                                    <img src={p.image} className="h-12 w-12 rounded-lg object-cover bg-slate-100 border border-slate-200" onError={(e) => e.target.src='https://via.placeholder.com/48'} />
+                                                    <img src={p.image} className="h-12 w-12 rounded-lg object-cover bg-gray-100 border border-gray-200" onError={(e) => e.target.src='https://placehold.co/100x100?text=No+Img'} />
                                                     <div>
-                                                        <div className="font-bold text-slate-800">{p.name}</div>
-                                                        <div className="text-xs text-slate-400 truncate max-w-[200px]">{p.description}</div>
+                                                        <div className="font-bold text-brandBlack font-serif">{p.name}</div>
+                                                        <div className="text-xs text-gray-400 truncate max-w-[200px]">{p.description}</div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="p-4">
-                                                <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs font-bold">{p.category || 'Standard'}</span>
+                                                <span className="px-2 py-1 bg-brandGold/10 text-brandGold border border-brandGold/20 rounded text-xs font-bold uppercase tracking-wider">{p.category || 'Standard'}</span>
                                             </td>
                                             <td className="p-4">
-                                                <span className="font-mono font-bold text-slate-700">{p.price}</span>
+                                                <span className="font-mono font-bold text-brandBlack">{p.price}</span>
                                             </td>
-                                            <td className="p-4 text-xs text-slate-500">
-                                                {/* Supabase uses created_at (snake_case) */}
+                                            <td className="p-4 text-xs text-gray-500">
                                                 {p.created_at ? new Date(p.created_at).toLocaleDateString() : '-'}
                                             </td>
                                             <td className="p-4 pr-6 text-right">
                                                 <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <button onClick={() => onEdit(p)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><i className="fas fa-pen"></i></button>
-                                                    <button onClick={() => onDelete(p.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><i className="fas fa-trash-alt"></i></button>
+                                                    <button onClick={() => onEdit(p)} className="p-2 text-gray-400 hover:text-brandGold hover:bg-brandBlack/5 rounded-lg transition"><i className="fas fa-pen"></i></button>
+                                                    <button onClick={() => onDelete(p.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><i className="fas fa-trash-alt"></i></button>
                                                 </div>
                                             </td>
                                         </tr>
                                     ))}
                                     {filteredProducts.length === 0 && (
                                         <tr>
-                                            <td colSpan="5" className="p-12 text-center text-slate-400">
-                                                <i className="fas fa-box-open text-4xl mb-4 opacity-50"></i>
+                                            <td colSpan="5" className="p-12 text-center text-gray-400">
+                                                <i className="fas fa-box-open text-4xl mb-4 opacity-30 text-brandGold"></i>
                                                 <p>No products found in database.</p>
                                             </td>
                                         </tr>
@@ -328,7 +425,6 @@
             const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 Minutes
             const logoutTimerRef = useRef(null);
 
-            // Logout Handler
             const handleLogout = useCallback(async (forced = false) => {
                 if(forced || confirm("Are you sure you want to logout?")) {
                     await window.supabase.auth.signOut();
@@ -336,22 +432,15 @@
                 }
             }, []);
 
-            // Manage Session
             useEffect(() => {
                 window.supabase.auth.getSession().then(({ data: { session } }) => {
                     setSession(session);
                     setLoading(false);
-                    if (session) {
-                        console.log("Active Session User ID:", session.user.id);
-                    }
                 });
 
                 const { data: { subscription } } = window.supabase.auth.onAuthStateChange((_event, session) => {
                     setSession(session);
                     setLoading(false);
-                    if (session) {
-                        console.log("Active Session User ID:", session.user.id);
-                    }
                 });
 
                 return () => subscription.unsubscribe();
@@ -360,207 +449,98 @@
             // Auto Logout Logic
             useEffect(() => {
                 if (!session) return;
-
                 const resetTimer = () => {
                     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
                     logoutTimerRef.current = setTimeout(() => {
-                        handleLogout(true); // Forced logout
+                        handleLogout(true);
                     }, INACTIVITY_LIMIT);
                 };
-
-                // Events to track activity
                 const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
-                
-                // Initial start
                 resetTimer();
-
-                // Add listeners
                 events.forEach(event => window.addEventListener(event, resetTimer));
-
-                // Cleanup
                 return () => {
                     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
                     events.forEach(event => window.removeEventListener(event, resetTimer));
                 };
             }, [session, handleLogout]);
 
-            // Fetch Products using Supabase (Only when authenticated)
+            // Fetch Products
             useEffect(() => {
                 if (session) {
                     const sb = window.supabase;
-
-                    // 1. Initial Fetch
                     const fetchProducts = async () => {
                         const { data, error } = await sb
                             .from('products')
                             .select('*')
                             .order('created_at', { ascending: false });
-                        
-                        if (error) {
-                            console.error("Error fetching products:", error);
-                        } else if (data) {
-                            setProducts(data);
-                        }
+                        if (!error && data) setProducts(data);
                     };
-
                     fetchProducts();
 
-                    // 2. Realtime Subscription
-                    const channel = sb
-                        .channel('table-db-changes')
-                        .on(
-                            'postgres_changes',
-                            { event: '*', schema: 'public', table: 'products' },
-                            (payload) => {
-                                // Realtime updates
-                                if (payload.eventType === 'INSERT') {
-                                    setProducts(prev => [payload.new, ...prev]);
-                                } else if (payload.eventType === 'DELETE') {
-                                    setProducts(prev => prev.filter(item => item.id !== payload.old.id));
-                                } else if (payload.eventType === 'UPDATE') {
-                                    setProducts(prev => prev.map(item => item.id === payload.new.id ? payload.new : item));
-                                }
-                            }
-                        )
+                    const channel = sb.channel('table-db-changes')
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
+                            if (payload.eventType === 'INSERT') setProducts(prev => [payload.new, ...prev]);
+                            else if (payload.eventType === 'DELETE') setProducts(prev => prev.filter(item => item.id !== payload.old.id));
+                            else if (payload.eventType === 'UPDATE') setProducts(prev => prev.map(item => item.id === payload.new.id ? payload.new : item));
+                        })
                         .subscribe();
-
-                    return () => {
-                        sb.removeChannel(channel);
-                    };
+                    return () => sb.removeChannel(channel);
                 }
             }, [session]);
 
-            // Handlers
             const handleAddProduct = async (data) => {
                 const sb = window.supabase;
-                
-                console.log("Attempting to save product:", data);
-
                 if (editingProduct) {
-                    // Update in Database
-                    const { error } = await sb
-                        .from('products')
-                        .update({
-                            name: data.name,
-                            price: data.price,
-                            description: data.description,
-                            image: data.image,
-                            category: data.category
-                        })
-                        .eq('id', editingProduct.id);
-
-                    if (error) {
-                        alert('Error updating product: ' + error.message);
-                    }
+                    const { error } = await sb.from('products').update(data).eq('id', editingProduct.id);
+                    if (error) alert('Error updating product: ' + error.message);
                 } else {
-                    // Insert into Database
-                    const { error } = await sb
-                        .from('products')
-                        .insert([{
-                            name: data.name,
-                            price: data.price,
-                            description: data.description,
-                            image: data.image,
-                            category: data.category
-                        }]);
-
-                    if (error) {
-                        alert('Error creating product: ' + error.message);
-                    }
+                    const { error } = await sb.from('products').insert([data]);
+                    if (error) alert('Error creating product: ' + error.message);
                 }
             };
 
             const handleDeleteProduct = async (id) => {
                 if (confirm('Are you sure you want to remove this product from the website?')) {
-                    const sb = window.supabase;
-                    
-                    // Delete from Database
-                    const { data, error } = await sb
-                        .from('products')
-                        .delete()
-                        .eq('id', id)
-                        .select();
-                    
-                    if (error) {
-                        alert('Error deleting product: ' + error.message);
-                    } else if (!data || data.length === 0) {
-                        alert('Delete Failed: Permission denied. Please check your Supabase RLS policies.');
-                    }
+                    const { error } = await window.supabase.from('products').delete().eq('id', id);
+                    if (error) alert('Error deleting product: ' + error.message);
                 }
             };
 
-            const openAddModal = () => {
-                setEditingProduct(null);
-                setModalOpen(true);
-            };
+            const openAddModal = () => { setEditingProduct(null); setModalOpen(true); };
+            const openEditModal = (product) => { setEditingProduct(product); setModalOpen(true); };
 
-            const openEditModal = (product) => {
-                setEditingProduct(product);
-                setModalOpen(true);
-            };
-
-            if (loading) {
-                return (
-                    <div className="min-h-screen flex items-center justify-center bg-slate-100">
-                        <i className="fas fa-circle-notch fa-spin text-4xl text-slate-400"></i>
-                    </div>
-                );
-            }
-
+            if (loading) return <div className="min-h-screen flex items-center justify-center bg-brandWhite"><i className="fas fa-circle-notch fa-spin text-4xl text-brandGold"></i></div>;
             if (!session) return <LoginScreen />;
 
             return (
-                <div className="flex min-h-screen bg-[#f8fafc]">
-                    {/* Sidebar */}
-                    <aside className="w-64 bg-slate-900 text-slate-300 fixed h-full z-20 flex flex-col shadow-2xl">
-                        <div className="h-20 flex items-center px-6 font-bold text-white text-xl tracking-wider border-b border-slate-800 bg-slate-950">
+                <div className="flex min-h-screen bg-brandWhite">
+                    <aside className="w-64 bg-brandBlack text-gray-300 fixed h-full z-20 flex flex-col shadow-2xl border-r border-brandGold/20">
+                        <div className="h-20 flex items-center px-6 font-bold text-white text-xl tracking-wider border-b border-brandGold/20 font-serif">
                             DYUK ADMIN
                         </div>
                         <nav className="flex-1 py-6 px-3 space-y-1">
-                            <button className="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-all bg-green-700 text-white shadow-lg shadow-green-900/50">
+                            <button className="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-all bg-brandBlue text-brandGold shadow-lg shadow-brandBlack/50 border border-brandGold/10">
                                 <i className="fas fa-boxes w-5"></i> Inventory
                             </button>
-                            <div className="mt-8 px-4 text-xs font-bold text-slate-600 uppercase tracking-wider">System</div>
-                            <a href="index.html" target="_blank" className="block w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 hover:bg-slate-800 hover:text-white transition-all text-slate-400">
+                            <div className="mt-8 px-4 text-xs font-bold text-brandGold/70 uppercase tracking-wider">System</div>
+                            <a href="index.html" target="_blank" className="block w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 hover:bg-brandBlue hover:text-white transition-all text-gray-400">
                                 <i className="fas fa-external-link-alt w-5"></i> View Website
                             </a>
                         </nav>
-                        <div className="p-4 border-t border-slate-800">
-                            <button onClick={() => handleLogout(false)} className="flex items-center gap-3 text-red-400 hover:text-red-300 text-sm font-bold w-full px-4 py-2 hover:bg-slate-800 rounded-lg transition">
+                        <div className="p-4 border-t border-brandGold/20">
+                            <button onClick={() => handleLogout(false)} className="flex items-center gap-3 text-red-400 hover:text-red-300 text-sm font-bold w-full px-4 py-2 hover:bg-brandBlue rounded-lg transition">
                                 <i className="fas fa-sign-out-alt"></i> Logout
                             </button>
                         </div>
                     </aside>
-
-                    {/* Main Content */}
                     <main className="flex-1 ml-64 p-8">
-                        {/* Top Bar */}
                         <header className="flex justify-between items-center mb-8">
-                            <div>
-                                <h1 className="text-2xl font-bold text-slate-800">Product Management</h1>
-                                <p className="text-slate-500 text-sm">Welcome back, Admin</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold border-2 border-white shadow-sm">AD</div>
-                            </div>
+                            <div><h1 className="text-2xl font-bold text-brandBlack font-serif">Product Management</h1><p className="text-gray-500 text-sm">Welcome back, Admin</p></div>
+                            <div className="flex items-center gap-3"><div className="h-10 w-10 rounded-full bg-brandBlue text-brandGold flex items-center justify-center font-bold border border-brandGold shadow-sm">AD</div></div>
                         </header>
-
-                        {/* Inventory View Only */}
-                        <Dashboard 
-                            products={products} 
-                            onAdd={openAddModal}
-                            onEdit={openEditModal}
-                            onDelete={handleDeleteProduct}
-                        />
+                        <Dashboard products={products} onAdd={openAddModal} onEdit={openEditModal} onDelete={handleDeleteProduct} />
                     </main>
-
-                    {/* Modals */}
-                    <ProductModal 
-                        isOpen={modalOpen} 
-                        onClose={() => setModalOpen(false)} 
-                        product={editingProduct}
-                        onSave={handleAddProduct}
-                    />
+                    <ProductModal isOpen={modalOpen} onClose={() => setModalOpen(false)} product={editingProduct} onSave={handleAddProduct} />
                 </div>
             );
         };
