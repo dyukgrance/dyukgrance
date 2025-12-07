@@ -52,34 +52,42 @@
     <script type="text/babel">
         const FALLBACK_IMAGE = "https://placehold.co/600x800/0F172A/D4AF37?text=Dyukgrance";
 
-        // --- TAG DEFINITIONS (Automatic Logic) ---
+        // --- TAG DEFINITIONS (Case Insensitive Matching Logic) ---
         const TAG_DEFINITIONS = {
-            "Force of Nature": ["Fierce", "Masculine", "Sensual"],
-            "Whispers of Earth": ["Earthy", "Woody", "Peaceful"],
-            "Sweet Echo": ["Sweet", "Romantic", "Tender"]
+            "force of nature": ["Fierce", "Masculine", "Sensual"],
+            "whispers of earth": ["Earthy", "Woody", "Peaceful"],
+            "sweet echo": ["Sweet", "Romantic", "Tender"]
         };
 
         const SIGNATURE_STORIES = {
-            "Sweet Echo": {
+            "sweet echo": {
+                title: "Sweet Echo",
                 subtitle: "The Intimate Whisper",
                 desc: "A scent that pulls you closer. Sweet Echo is the fragrance of softness that stays long after the moment ends. It opens with a warm sweetness that feels like a quiet confession, then settles into an intimate floral embrace that lingers on the skin like a lover’s memory. Crafted for evenings when the heart wants to be held, Sweet Echo is a gentle reminder that romance can be both delicate and powerful."
             },
-            "Force of Nature": {
+            "force of nature": {
+                title: "Force of Nature",
                 subtitle: "The Bold Command",
                 desc: "Unapologetically dominant. Force of Nature is strength bottled—raw, magnetic, and impossible to forget. It crashes in with bold, smoky notes that command attention, then melts into a sensual trail that feels like authority wrapped in desire. This fragrance is for the confident, the daring, the ones who enter a room and shift the atmosphere without speaking."
             },
-            "Whispers of Earth": {
+            "whispers of earth": {
+                title: "Whispers of Earth",
                 subtitle: "The Calm After Rain",
                 desc: "Like nature breathing around you. Whispers of Earth is a return to the quiet magic of the natural world. It begins with the fresh, damp scent of soil after rainfall—clean, grounding, almost spiritual. As it settles, warm woods and soft moss rise gently, surrounding you in calmness and clarity. This fragrance feels like stepping into a serene forest after a storm."
             }
         };
 
         const getProductTags = (product) => {
-            const name = product.name ? product.name.trim() : "";
+            const name = product.name ? product.name.trim().toLowerCase() : "";
             if (TAG_DEFINITIONS[name]) {
                 return TAG_DEFINITIONS[name];
             }
             return product.category ? [product.category] : ["Signature Scent"];
+        };
+
+        const getStoryData = (productName) => {
+             const name = productName ? productName.trim().toLowerCase() : "";
+             return SIGNATURE_STORIES[name];
         };
 
         // --- COMPONENTS ---
@@ -170,7 +178,9 @@
 
             if (loading) return <div className={`py-24 ${bgClass} text-center text-brandGold animate-pulse tracking-widest`}>LOADING STORIES...</div>;
 
-            const signatureProducts = products.filter(p => SIGNATURE_STORIES[p.name]);
+            // Filter products that have a matching story key (Case Insensitive)
+            const signatureProducts = products.filter(p => getStoryData(p.name));
+
             if (signatureProducts.length === 0) return null;
 
             return (
@@ -182,8 +192,8 @@
                         </div>
                         <div className="space-y-24">
                             {signatureProducts.map((p, index) => {
-                                const story = SIGNATURE_STORIES[p.name];
-                                const tags = getProductTags(p); // Dynamic Tags
+                                const story = getStoryData(p.name);
+                                const tags = getProductTags(p);
                                 
                                 return (
                                     <div key={p.id} className={`flex flex-col ${index % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} gap-12 items-center`}>
@@ -199,9 +209,13 @@
                                                     <span key={i} className={`text-[10px] uppercase tracking-widest border px-2 py-1 ${tagBorder}`}>{tag}</span>
                                                 ))}
                                             </div>
-                                            <h3 className={`text-3xl font-serif ${titleColor} mb-1`}>{p.name}</h3>
+                                            {/* Uses the Title from DB or Story, but Story Title is preferred for capitalization consistency */}
+                                            <h3 className={`text-3xl font-serif ${titleColor} mb-1`}>{story.title || p.name}</h3>
                                             <p className="text-brandGold italic font-serif text-lg mb-6">{story.subtitle}</p>
+                                            
+                                            {/* CRITICAL: This uses the HARDCODED description from SIGNATURE_STORIES */}
                                             <p className={`${textColor} leading-loose mb-8 font-sans text-sm md:text-base`}>{story.desc}</p>
+                                            
                                             <div className="flex flex-col md:flex-row gap-4 items-center justify-center md:justify-start">
                                                 <button onClick={() => handleOrder(p.name)} className="bg-brandBlue text-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brandGold hover:text-black transition duration-300 shadow-lg">
                                                     Make It Yours
@@ -226,7 +240,7 @@
             const descColor = isDarkMode ? "text-gray-400" : "text-gray-600";
             const tagColor = isDarkMode ? "text-brandGold/70" : "text-brandBlue/70";
             
-            const tags = getProductTags(data); // Dynamic Tags
+            const tags = getProductTags(data); 
 
             return (
                 <div className={`${cardBg} border group relative hover:-translate-y-2 transition duration-700 flex flex-col h-full`}>
@@ -244,7 +258,10 @@
                             ))}
                         </div>
                         <h3 className={`text-xl font-serif ${titleColor} mb-2`}>{data.name || "Unnamed Product"}</h3>
+                        
+                        {/* CRITICAL: This uses the DATABASE description uploaded by Admin */}
                         <p className={`${descColor} text-xs font-sans leading-relaxed mb-4 line-clamp-3`}>{data.description}</p>
+                        
                         <div className="mt-auto">
                             <p className="text-brandGold font-bold text-sm">{data.price || "Contact for Price"}</p>
                         </div>
