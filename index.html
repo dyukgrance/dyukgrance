@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dyukgrance is a luxury fragrance house crafting scents that embody emotion and memory. Discover our signature collections: Sweet Echo, Force of Nature, and Whispers of Earth.">
     <title>Dyukgrance | Where Fragrance Becomes Feeling</title>
+    
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = 'https://nhqfujphhgdajuhpzohd.supabase.co';
@@ -39,7 +43,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        /* Elegant fade in */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeIn 1s ease-out forwards; }
     </style>
@@ -49,29 +52,40 @@
     <script type="text/babel">
         const FALLBACK_IMAGE = "https://placehold.co/600x800/0F172A/D4AF37?text=Dyukgrance";
 
-        // Rich Content Dictionary for Signature Scents (To maintain the story)
+        // --- TAG DEFINITIONS (Automatic Logic) ---
+        const TAG_DEFINITIONS = {
+            "Force of Nature": ["Fierce", "Masculine", "Sensual"],
+            "Whispers of Earth": ["Earthy", "Woody", "Peaceful"],
+            "Sweet Echo": ["Sweet", "Romantic", "Tender"]
+        };
+
         const SIGNATURE_STORIES = {
             "Sweet Echo": {
                 subtitle: "The Intimate Whisper",
-                tags: ["Sweet", "Romantic", "Tender"],
-                desc: "A scent that pulls you closer. Sweet Echo is the fragrance of softness that stays long after the moment ends. It opens with a warm sweetness that feels like a quiet confession, then settles into an intimate floral embrace that lingers on the skin like a lover’s memory. Crafted for evenings when the heart wants to be held, Sweet Echo is a gentle reminder that romance can be both delicate and powerful. This is the scent of close conversations, soft touches, and emotions too sweet to hide."
+                desc: "A scent that pulls you closer. Sweet Echo is the fragrance of softness that stays long after the moment ends. It opens with a warm sweetness that feels like a quiet confession, then settles into an intimate floral embrace that lingers on the skin like a lover’s memory. Crafted for evenings when the heart wants to be held, Sweet Echo is a gentle reminder that romance can be both delicate and powerful."
             },
             "Force of Nature": {
                 subtitle: "The Bold Command",
-                tags: ["Fierce", "Masculine", "Sensual"],
-                desc: "Unapologetically dominant. Force of Nature is strength bottled—raw, magnetic, and impossible to forget. It crashes in with bold, smoky notes that command attention, then melts into a sensual trail that feels like authority wrapped in desire. This fragrance is for the confident, the daring, the ones who enter a room and shift the atmosphere without speaking. Force of Nature is not worn… it is unleashed."
+                desc: "Unapologetically dominant. Force of Nature is strength bottled—raw, magnetic, and impossible to forget. It crashes in with bold, smoky notes that command attention, then melts into a sensual trail that feels like authority wrapped in desire. This fragrance is for the confident, the daring, the ones who enter a room and shift the atmosphere without speaking."
             },
             "Whispers of Earth": {
                 subtitle: "The Calm After Rain",
-                tags: ["Earthy", "Woody", "Peaceful"],
-                desc: "Like nature breathing around you. Whispers of Earth is a return to the quiet magic of the natural world. It begins with the fresh, damp scent of soil after rainfall—clean, grounding, almost spiritual. As it settles, warm woods and soft moss rise gently, surrounding you in calmness and clarity. This fragrance feels like stepping into a serene forest after a storm: the air is pure, the world is still, and every breath feels like renewal. For the soul that craves peace, depth, and grounding."
+                desc: "Like nature breathing around you. Whispers of Earth is a return to the quiet magic of the natural world. It begins with the fresh, damp scent of soil after rainfall—clean, grounding, almost spiritual. As it settles, warm woods and soft moss rise gently, surrounding you in calmness and clarity. This fragrance feels like stepping into a serene forest after a storm."
             }
         };
 
+        const getProductTags = (product) => {
+            const name = product.name ? product.name.trim() : "";
+            if (TAG_DEFINITIONS[name]) {
+                return TAG_DEFINITIONS[name];
+            }
+            return product.category ? [product.category] : ["Signature Scent"];
+        };
+
+        // --- COMPONENTS ---
+
         function Navbar({ setPage, isDarkMode, toggleTheme }) {
             const [isOpen, setIsOpen] = React.useState(false);
-            
-            // Dynamic Classes based on theme
             const navBg = isDarkMode ? "bg-brandBlack/90 border-brandGold/20" : "bg-white/90 border-brandBlue/10 shadow-sm";
             const textColor = isDarkMode ? "text-white hover:text-brandGold" : "text-brandBlue hover:text-brandGold";
             const linkColor = isDarkMode ? "text-gray-300 hover:text-brandGold" : "text-gray-600 hover:text-brandBlue";
@@ -82,25 +96,19 @@
                         <div className={`text-2xl font-serif tracking-widest cursor-pointer transition duration-300 ${textColor}`} onClick={() => setPage('home')}>
                             DYUKGRANCE
                         </div>
-                        
                         <div className="hidden md:flex items-center space-x-12">
                             {['Home', 'Collections', 'About'].map(i => (
                                 <button key={i} onClick={() => setPage(i.toLowerCase())} className={`${linkColor} uppercase text-xs tracking-[0.2em] transition duration-300`}>
                                     {i}
                                 </button>
                             ))}
-                            
-                            {/* Toggle Button Desktop */}
                             <button onClick={toggleTheme} className={`${linkColor} transition duration-300`}>
                                 <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'} text-lg`}></i>
                             </button>
-
                             <button className="text-brandGold hover:text-white transition duration-300" onClick={() => setPage('collections')}>
                                 <i className="fas fa-shopping-bag text-xl"></i>
                             </button>
                         </div>
-
-                        {/* Mobile Controls */}
                         <div className="flex items-center gap-6 md:hidden">
                             <button onClick={toggleTheme} className={linkColor}>
                                 <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'} text-lg`}></i>
@@ -110,8 +118,6 @@
                             </button>
                         </div>
                     </div>
-
-                    {/* Mobile Menu */}
                     {isOpen && (
                         <div className={`md:hidden ${isDarkMode ? 'bg-brandBlack text-white' : 'bg-white text-brandBlue'} absolute w-full border-t border-brandGold/10`}>
                             <div className="flex flex-col p-4 space-y-4 text-center">
@@ -139,7 +145,6 @@
                 <div className={`h-screen flex items-center justify-center ${bgClass} relative overflow-hidden transition-colors duration-500`}>
                     <img src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&q=80" className="absolute inset-0 w-full h-full object-cover opacity-30" />
                     <div className={`absolute inset-0 ${gradientOverlay}`}></div>
-                    
                     <div className="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-up">
                         <h1 className={`text-5xl md:text-8xl font-serif ${textColor} mb-8 leading-tight`}>
                             Every Bottle <br/><span className="gold-text italic">Holds A Story</span>
@@ -158,7 +163,6 @@
 
         function SignatureNarratives({ products, loading, isDarkMode }) {
             const handleOrder = (name) => window.open(`https://wa.me/23409037475517?text=I am enchanted by the story of ${name}. How can I order?`, '_blank');
-
             const bgClass = isDarkMode ? "bg-brandBlack" : "bg-gray-50";
             const titleColor = isDarkMode ? "text-white" : "text-brandBlue";
             const textColor = isDarkMode ? "text-gray-300" : "text-gray-700";
@@ -166,15 +170,8 @@
 
             if (loading) return <div className={`py-24 ${bgClass} text-center text-brandGold animate-pulse tracking-widest`}>LOADING STORIES...</div>;
 
-            const displayProducts = products.map(p => {
-                const story = SIGNATURE_STORIES[p.name];
-                return {
-                    ...p,
-                    subtitle: story ? story.subtitle : "The Essence of Luxury",
-                    tags: story ? story.tags : [p.category || "Exclusive"],
-                    longDesc: story ? story.desc : p.description
-                };
-            });
+            const signatureProducts = products.filter(p => SIGNATURE_STORIES[p.name]);
+            if (signatureProducts.length === 0) return null;
 
             return (
                 <div className={`py-24 ${bgClass} transition-colors duration-500`}>
@@ -183,40 +180,38 @@
                             <h2 className={`text-3xl md:text-4xl font-serif ${titleColor} mb-4`}>Fragrance Stories</h2>
                             <p className="text-gray-400 italic font-serif">"Every scent is a chapter."</p>
                         </div>
-                        
                         <div className="space-y-24">
-                            {displayProducts.map((story, index) => (
-                                <div key={story.id} className={`flex flex-col ${index % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} gap-12 items-center`}>
-                                    <div className="w-full md:w-1/2">
-                                        <div className="relative border-2 border-brandGold/20 p-2 shadow-xl">
-                                            <img 
-                                                src={story.image && story.image.startsWith('http') ? story.image : FALLBACK_IMAGE} 
-                                                alt={story.name} 
-                                                className="w-full h-[500px] object-cover filter hover:brightness-110 transition duration-700" 
-                                                onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
-                                            />
+                            {signatureProducts.map((p, index) => {
+                                const story = SIGNATURE_STORIES[p.name];
+                                const tags = getProductTags(p); // Dynamic Tags
+                                
+                                return (
+                                    <div key={p.id} className={`flex flex-col ${index % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} gap-12 items-center`}>
+                                        <div className="w-full md:w-1/2">
+                                            <div className="relative border-2 border-brandGold/20 p-2 shadow-xl">
+                                                <img src={p.image || FALLBACK_IMAGE} alt={p.name} className="w-full h-[500px] object-cover filter hover:brightness-110 transition duration-700" 
+                                                onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }} />
+                                            </div>
+                                        </div>
+                                        <div className="w-full md:w-1/2 text-center md:text-left">
+                                            <div className="mb-4 flex flex-wrap justify-center md:justify-start gap-2">
+                                                {tags.map((tag, i) => (
+                                                    <span key={i} className={`text-[10px] uppercase tracking-widest border px-2 py-1 ${tagBorder}`}>{tag}</span>
+                                                ))}
+                                            </div>
+                                            <h3 className={`text-3xl font-serif ${titleColor} mb-1`}>{p.name}</h3>
+                                            <p className="text-brandGold italic font-serif text-lg mb-6">{story.subtitle}</p>
+                                            <p className={`${textColor} leading-loose mb-8 font-sans text-sm md:text-base`}>{story.desc}</p>
+                                            <div className="flex flex-col md:flex-row gap-4 items-center justify-center md:justify-start">
+                                                <button onClick={() => handleOrder(p.name)} className="bg-brandBlue text-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brandGold hover:text-black transition duration-300 shadow-lg">
+                                                    Make It Yours
+                                                </button>
+                                                <span className="text-brandGold font-bold text-lg">{p.price}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="w-full md:w-1/2 text-center md:text-left">
-                                        <div className="mb-4 flex flex-wrap justify-center md:justify-start gap-2">
-                                            {story.tags.map((tag, i) => (
-                                                <span key={i} className={`text-[10px] uppercase tracking-widest border px-2 py-1 ${tagBorder}`}>{tag}</span>
-                                            ))}
-                                        </div>
-                                        <h3 className={`text-3xl font-serif ${titleColor} mb-1`}>{story.name}</h3>
-                                        <p className="text-brandGold italic font-serif text-lg mb-6">{story.subtitle}</p>
-                                        <p className={`${textColor} leading-loose mb-8 font-sans text-sm md:text-base`}>
-                                            {story.longDesc}
-                                        </p>
-                                        <div className="flex flex-col md:flex-row gap-4 items-center justify-center md:justify-start">
-                                            <button onClick={() => handleOrder(story.name)} className="bg-brandBlue text-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brandGold hover:text-black transition duration-300 shadow-lg">
-                                                Make It Yours
-                                            </button>
-                                            <span className="text-brandGold font-bold text-lg">{story.price}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -226,27 +221,28 @@
         function CollectionItem({ data, isDarkMode }) {
             const handleBuy = () => window.open(`https://wa.me/23409037475517?text=Hi, I am interested in ordering ${data.name} for ${data.price}`, '_blank');
             const imageSrc = (data.image && data.image.startsWith('http')) ? data.image : FALLBACK_IMAGE;
-
-            // Card styles based on mode
             const cardBg = isDarkMode ? "bg-brandBlue border-brandGold/10" : "bg-white border-gray-200 shadow-lg";
             const titleColor = isDarkMode ? "text-white" : "text-brandBlue";
             const descColor = isDarkMode ? "text-gray-400" : "text-gray-600";
+            const tagColor = isDarkMode ? "text-brandGold/70" : "text-brandBlue/70";
+            
+            const tags = getProductTags(data); // Dynamic Tags
 
             return (
                 <div className={`${cardBg} border group relative hover:-translate-y-2 transition duration-700 flex flex-col h-full`}>
                     <div className="aspect-[3/4] overflow-hidden relative">
-                        <img 
-                            src={imageSrc} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition duration-1000" 
-                            onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }}
-                            alt={data.name} 
-                        />
+                        <img src={imageSrc} className="w-full h-full object-cover group-hover:scale-110 transition duration-1000" 
+                        onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMAGE; }} alt={data.name} />
                         <div className="absolute inset-0 bg-black/40 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition duration-500">
                             <button onClick={handleBuy} className="bg-brandGold text-black px-8 py-3 text-xs font-bold uppercase shadow-lg hover:bg-white transition tracking-widest">Order WhatsApp</button>
                         </div>
                     </div>
                     <div className="p-6 text-center flex-grow flex flex-col">
-                        {data.category && <div className="text-[10px] text-brandGold/70 uppercase tracking-widest mb-2">{data.category}</div>}
+                        <div className={`text-[9px] uppercase tracking-widest mb-3 flex justify-center gap-2 flex-wrap`}>
+                            {tags.map((tag, i) => (
+                                <span key={i} className={tagColor}>{tag}</span>
+                            ))}
+                        </div>
                         <h3 className={`text-xl font-serif ${titleColor} mb-2`}>{data.name || "Unnamed Product"}</h3>
                         <p className={`${descColor} text-xs font-sans leading-relaxed mb-4 line-clamp-3`}>{data.description}</p>
                         <div className="mt-auto">
@@ -272,7 +268,7 @@
                             (products.length > 0 ? 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">{products.map(p => <CollectionItem key={p.id} data={p} isDarkMode={isDarkMode} />)}</div> : 
                                 <div className="text-center text-gray-500 p-16 border border-brandGold/10 rounded">
-                                    <p className="mb-2">The collection is currently being updated.</p>
+                                    <p className="mb-2">The collection is currently empty.</p>
                                 </div>
                             )
                         }
@@ -290,7 +286,6 @@
             return (
                 <div className={`py-32 ${bgClass} ${textColor} relative overflow-hidden transition-colors duration-500`}>
                     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brandGold/5 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3"></div>
-                    
                     <div className="max-w-7xl mx-auto px-6 relative z-10">
                         <div className="text-center max-w-3xl mx-auto mb-20">
                             <h2 className="text-4xl md:text-5xl font-serif mb-8">About <span className="gold-text">Dyukgrance</span></h2>
@@ -298,32 +293,30 @@
                                 Dyukgrance is a luxury fragrance house built on the art of storytelling. 
                                 Born from the belief that scent is the most intimate form of memory, we craft perfumes that live beyond the skin—fragrances that speak in emotion, echo in silence, and remain long after the moment has passed.
                             </p>
-                            <div className="flex flex-col gap-2 italic font-serif text-brandGold text-lg">
-                                <span>"Every bottle is a story."</span>
-                                <span>"Every scent is a chapter."</span>
-                                <span>"Every experience is an invitation to step deeper into yourself."</span>
-                            </div>
                         </div>
-
-                        <div className="grid md:grid-cols-2 gap-12 mt-16">
-                            <div className={`${cardBg} p-10 border hover:border-brandGold/30 transition duration-500`}>
-                                <h3 className="text-2xl font-serif text-brandGold mb-4">Our Mission</h3>
-                                <p className={`${descColor} leading-relaxed font-sans`}>
-                                    To craft fragrances that hold stories—quiet, powerful, but unforgettable. 
-                                    We create scents that speak to emotion, memory, and identity—blending art and chemistry into olfactory poetry. 
-                                    Each bottle is a narrative, designed to linger on skin and in soul, capturing the luxury of authenticity and the elegance of being truly seen.
+                        <div className="grid md:grid-cols-3 gap-8 mt-16">
+                            <div className={`${cardBg} p-8 border hover:border-brandGold/30 transition duration-500 text-center`}>
+                                <div className="text-brandGold text-3xl mb-4"><i className="fas fa-gem"></i></div>
+                                <h3 className="text-xl font-serif text-brandGold mb-4">Our Mission</h3>
+                                <p className={`${descColor} leading-relaxed font-sans text-sm`}>
+                                    To craft fragrances that hold stories—quiet, powerful, but unforgettable. We create scents that speak to emotion, memory, and identity.
                                 </p>
                             </div>
-                            <div className={`${cardBg} p-10 border hover:border-brandGold/30 transition duration-500`}>
-                                <h3 className="text-2xl font-serif text-brandGold mb-4">Our Vision</h3>
-                                <p className={`${descColor} leading-relaxed font-sans`}>
-                                    To become a global symbol of luxurious self-expression through scent. 
-                                    We seek to redefine perfume as more than fragrance—transforming it into an emotional experience that connects people to who they are, where they’ve been, and who they are becoming.
-                                    Dyukgrance will stand as a timeless house of storytelling, merging craftsmanship with meaning, and inspiring a new generation to wear their essence boldly.
+                            <div className={`${cardBg} p-8 border hover:border-brandGold/30 transition duration-500 text-center`}>
+                                <div className="text-brandGold text-3xl mb-4"><i className="fas fa-eye"></i></div>
+                                <h3 className="text-xl font-serif text-brandGold mb-4">Our Vision</h3>
+                                <p className={`${descColor} leading-relaxed font-sans text-sm`}>
+                                    To become a global symbol of luxurious self-expression through scent. We seek to redefine perfume as more than fragrance.
+                                </p>
+                            </div>
+                            <div className={`${cardBg} p-8 border hover:border-brandGold/30 transition duration-500 text-center`}>
+                                <div className="text-brandGold text-3xl mb-4"><i className="fas fa-flask"></i></div>
+                                <h3 className="text-xl font-serif text-brandGold mb-4">Our Process</h3>
+                                <p className={`${descColor} leading-relaxed font-sans text-sm`}>
+                                    We source the finest ingredients from around the world, blending rare essences with meticulous care to create olfactory masterpieces.
                                 </p>
                             </div>
                         </div>
-                        
                         <div className="mt-16 text-center">
                             <p className="text-lg font-serif italic opacity-80">Dyukgrance: Where fragrance becomes feeling.</p>
                         </div>
@@ -334,22 +327,22 @@
 
         function Footer({ isDarkMode }) {
             const bgClass = isDarkMode ? "bg-black border-brandGold/20" : "bg-brandBlue border-brandGold/20";
-            const textClass = "text-white";
-
             return (
                 <footer className={`${bgClass} border-t pt-24 pb-12 transition-colors duration-500`}>
                     <div className="max-w-7xl mx-auto px-4 text-center">
-                        <h2 className={`text-3xl font-serif ${textClass} tracking-[0.3em] mb-10 hover:text-brandGold transition duration-500 cursor-default`}>DYUKGRANCE</h2>
-                        
+                        <h2 className="text-3xl font-serif text-white tracking-[0.3em] mb-10 cursor-default">DYUKGRANCE</h2>
                         <div className="flex justify-center space-x-12 mb-16">
-                            <a href="https://www.instagram.com/dyukgrance?igsh=MWNhdmlsYjk5dzU3ZA==" target="_blank" className="text-gray-500 hover:text-brandGold transition transform hover:-translate-y-1"><i className="fab fa-instagram text-2xl"></i></a>
-                            <a href="#" className="text-gray-500 hover:text-brandGold transition transform hover:-translate-y-1"><i className="fab fa-facebook text-2xl"></i></a>
-                            <a href="https://wa.me/23409037475517" target="_blank" className="text-gray-500 hover:text-brandGold transition transform hover:-translate-y-1"><i className="fab fa-whatsapp text-2xl"></i></a>
+                            <a href="https://www.instagram.com/dyukgrance?igsh=MWNhdmlsYjk5dzU3ZA==" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-brandGold transition transform hover:-translate-y-1">
+                                <i className="fab fa-instagram text-2xl"></i>
+                            </a>
+                            <a href="#" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-brandGold transition transform hover:-translate-y-1">
+                                <i className="fab fa-facebook text-2xl"></i>
+                            </a>
+                            <a href="https://wa.me/23409037475517" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-brandGold transition transform hover:-translate-y-1">
+                                <i className="fab fa-whatsapp text-2xl"></i>
+                            </a>
                         </div>
-
-                        <div className="border-t border-brandGold/10 pt-8 flex flex-col md:flex-row justify-center items-center text-xs text-gray-500 uppercase tracking-widest">
-                            <p>&copy; 2025 Dyukgrance Luxury Perfumes.</p>
-                        </div>
+                        <div className="text-xs text-gray-500 uppercase tracking-widest"><p>&copy; 2025 Dyukgrance Luxury Perfumes.</p></div>
                     </div>
                 </footer>
             );
@@ -361,16 +354,10 @@
             const [loading, setLoading] = React.useState(true);
             const [isDarkMode, setIsDarkMode] = React.useState(true);
 
-            React.useEffect(() => {
-                window.scrollTo(0,0);
-            }, [page]);
-
+            React.useEffect(() => window.scrollTo(0,0), [page]);
             const toggleTheme = () => setIsDarkMode(!isDarkMode);
-
-            // Background color wrapper
             const mainBg = isDarkMode ? "bg-brandBlack" : "bg-white";
 
-            // Fetch Products Once in Parent
             React.useEffect(() => {
                 const fetch = async () => {
                     if (window.supabase) {
